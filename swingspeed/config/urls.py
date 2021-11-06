@@ -19,6 +19,7 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('', include('users.urls')),
+    path('api/', include('users.urls')),
+    path('api/', include('swings.urls')),
 ]
 #urlpatterns = format_suffix_patterns(urlpatterns)
