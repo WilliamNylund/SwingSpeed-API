@@ -19,7 +19,8 @@ class SwingList(APIView):
     """
     List all swings, or create a new swing.
     """
-    def get(self, request, format=None):
+    def get(self, request, format=None): #request.user is of class anonymoususer if token is not given
+
         swings = Swing.objects.all()
         serializer = SwingSerializer(swings, many=True)
         return Response(serializer.data)

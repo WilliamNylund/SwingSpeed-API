@@ -6,6 +6,8 @@ from rest_framework import status
 from django.http import Http404
 from .managers import UserManager
 
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
 """
 {
 "username": "guest4",
@@ -13,6 +15,12 @@ from .managers import UserManager
 "email": "halaba@hotmail.com",
 "is_active": false
 }
+"""
+
+"""
+testuser1
+testuser1
+6a17f72ee80fa68c3922a14957c8e409865e5d74
 """
 
 class UserList(APIView):
@@ -26,11 +34,18 @@ class UserList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        #register
         serializer = UserSerializer(data=request.data)
+        print('registering')
         if serializer.is_valid():
-            print(serializer.data)
-            createdUserSerializer = UserSerializer(UserManager.create_user(serializer.Meta, **serializer.data))
-            return Response(createdUserSerializer.data, status=status.HTTP_201_CREATED)
+            user = UserManager.create_user(serializer.Meta, **serializer.data)
+            token = Token.objects.create(user=user)
+            createdUserSerializer = UserSerializer(user)
+            return Response({
+                'user': createdUserSerializer.data,
+                'token': token.key
+                },
+                status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetail(APIView):
@@ -60,3 +75,30 @@ class UserDetail(APIView):
         user = self.get_object(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserLogin(APIView):
+    """
+    Login user using username and password, returning a token
+    """
+    def post(self, request, format=None):
+        user = authenticate(username=request.data['username'], password=request.data['password'])
+        serializer = UserSerializer(user)
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
+            print(token)
+            return Response({
+                'user': serializer.data,
+                'token': token.key
+            },
+            status=status.HTTP_200_OK)
+        else:
+            raise Http404
+            
+
+class UserLogout(APIView):
+    """
+    Logout user, removing the token
+    """
+    def get(self, request, format=None):
+        request.user.auth_token.delete()
+        return Response('User logged out successfully')
