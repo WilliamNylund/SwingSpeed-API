@@ -6,8 +6,7 @@ from rest_framework import status
 from django.http import Http404
 from .models import Swing
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from swings.permissions import IsOwner
+from swings.permissions import IsOwner, IsOwnerOrAdmin
 from rest_framework import permissions
 """
 {
@@ -45,7 +44,7 @@ class SwingDetail(APIView):
     Retrieve, update or delete a swing instance.
     """
     authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
 
     def get_object(self, pk):
         try:

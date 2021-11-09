@@ -5,9 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from .managers import UserManager
-
+from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
+from rest_framework.authentication import TokenAuthentication
+from users.permissions import IsOwner, IsOwnerOrAdmin
+
 """
 {
 "username": "guest4",
@@ -18,15 +21,16 @@ from django.contrib.auth import authenticate
 """
 
 """
-testuser1
-testuser1
-6a17f72ee80fa68c3922a14957c8e409865e5d74
+Admin: Token 92334a5a4ac9043a1fff8ce915f38891fe477826
+User: Token 019815b4319fdbffe345c79fcbf555c1f1e5d9da
 """
 
 class UserList(APIView):
     """
     List all users, or create a new user.
     """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
     def get(self, request, format=None):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -36,9 +40,14 @@ class UserDetail(APIView):
     """
     Retrieve, update or delete a user instance.
     """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
     def get_object(self, pk):
         try:
-            return User.objects.get(pk=pk)
+            obj = User.objects.get(pk=pk)
+            self.check_object_permissions(self.request, obj)
+            return obj
+
         except User.DoesNotExist:
             raise Http404
 
@@ -69,7 +78,6 @@ class UserLogin(APIView):
         serializer = UserSerializer(user)
         if user is not None:
             token, created = Token.objects.get_or_create(user=user)
-            print(created)
             return Response({
                 'user': serializer.data,
                 'token': token.key
@@ -82,7 +90,10 @@ class UserLogout(APIView):
     """
     Logout user, removing the token
     """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
     def get(self, request, format=None):
+        self.check_object_permissions(self.request, request.user)
         request.user.auth_token.delete()
         return Response('User logged out successfully')
 
