@@ -5,7 +5,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from .models import Swing
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from swings.permissions import IsOwner
+from rest_framework import permissions
 """
 {
 "username": "guest4",
@@ -19,13 +22,18 @@ class SwingList(APIView):
     """
     List all swings, or create a new swing.
     """
-    def get(self, request, format=None): #request.user is of class anonymoususer if token is not given
-
-        swings = Swing.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, format=None):
+        swings = Swing.objects.all().filter(user=request.user)
         serializer = SwingSerializer(swings, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        request.data._mutable = True
+        request.data['user'] = request.user.pk
+        request.data._mutable = False
+
         serializer = SwingSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -36,9 +44,14 @@ class SwingDetail(APIView):
     """
     Retrieve, update or delete a swing instance.
     """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
     def get_object(self, pk):
         try:
-            return Swing.objects.get(pk=pk)
+            obj = Swing.objects.get(pk=pk)
+            self.check_object_permissions(self.request, obj)
+            return obj
         except Swing.DoesNotExist:
             raise Http404
 
@@ -49,7 +62,7 @@ class SwingDetail(APIView):
 
     def put(self, request, pk, format=None):
         swing = self.get_object(pk)
-        serializer = SwingSerializer(swing, data=request.data)
+        serializer = SwingSerializer(swing, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

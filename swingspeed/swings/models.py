@@ -25,7 +25,7 @@ class Swing(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     is_active = models.BooleanField(default=True, null=False)
     note = models.TextField(blank=True, null=False)
-    recording = models.FileField(upload_to=user_directory_path)
+    recording = models.FileField(upload_to=user_directory_path, blank=True)
 
     class Meta:
         ordering = ['date_created']
