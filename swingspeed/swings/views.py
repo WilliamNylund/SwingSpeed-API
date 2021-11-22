@@ -6,7 +6,7 @@ from rest_framework import status
 from django.http import Http404
 from .models import Swing
 from rest_framework.authentication import TokenAuthentication
-from swings.permissions import IsOwner, IsOwnerOrAdmin
+from swings.permissions import IsOwnerOrAdmin
 from rest_framework import permissions
 """
 {

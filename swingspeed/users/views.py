@@ -9,7 +9,7 @@ from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework.authentication import TokenAuthentication
-from users.permissions import IsOwner, IsOwnerOrAdmin
+from users.permissions import IsOwnerOrAdmin
 
 """
 {
@@ -95,7 +95,7 @@ class UserLogout(APIView):
     def get(self, request, format=None):
         self.check_object_permissions(self.request, request.user)
         request.user.auth_token.delete()
-        return Response('User logged out successfully')
+        return Response('User logged out successfully', status=status.HTTP_204_NO_CONTENT)
 
 class UserRegister(APIView):
     """
