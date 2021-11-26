@@ -1,5 +1,5 @@
 from .models import User
-from .serializers import SwingSerializer
+from .serializers import SwingSerializer, SwingUpdateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,14 +8,6 @@ from .models import Swing
 from rest_framework.authentication import TokenAuthentication
 from swings.permissions import IsOwnerOrAdmin
 from rest_framework import permissions
-"""
-{
-"username": "guest4",
-"password": "guest4",
-"email": "halaba@hotmail.com",
-"is_active": false
-}
-"""
 
 class SwingList(APIView):
     """
@@ -24,7 +16,7 @@ class SwingList(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     def get(self, request, format=None):
-        swings = Swing.objects.all().filter(user=request.user)
+        swings = Swing.objects.all().filter(user=request.user, is_active=True)
         serializer = SwingSerializer(swings, many=True)
         return Response(serializer.data)
 
@@ -61,11 +53,18 @@ class SwingDetail(APIView):
 
     def put(self, request, pk, format=None):
         swing = self.get_object(pk)
-        serializer = SwingSerializer(swing, data=request.data, partial=True)
+        serializer = SwingUpdateSerializer(swing, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk, format=None):
+        swing = self.get_object(pk)
+        serializer = SwingUpdateSerializer(swing, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
         swing = self.get_object(pk)

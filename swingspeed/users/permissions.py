@@ -8,7 +8,7 @@ class IsOwner(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        if request.method in ('GET', 'PUT', 'DELETE'):
+        if request.method in ('GET', 'PUT', 'DELETE', 'PATCH'):
             return obj.pk == request.user.pk
         return False
 
@@ -18,7 +18,7 @@ class IsOwnerOrAdmin(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        if request.method in ('GET', 'PUT', 'DELETE'):
+        if request.method in ('GET', 'PUT', 'DELETE', 'PATCH'):
             return (obj.pk == request.user.pk) or (request.user.is_staff)
         return False
 
