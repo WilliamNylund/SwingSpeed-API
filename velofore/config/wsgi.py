@@ -1,5 +1,5 @@
 """
-WSGI config for swingspeed project.
+WSGI config for velofore project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

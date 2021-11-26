@@ -1,0 +1,1 @@
+web: gunicorn velofore.wsgi --log-file -
