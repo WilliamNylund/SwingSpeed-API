@@ -6,7 +6,7 @@ from rest_framework import serializers
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'email', 'password', 'is_staff', 'is_active', 'is_superuser', 'date_created']
+        fields = ['id', 'username', 'email', 'password', 'is_staff', 'is_active', 'is_superuser', 'date_created', 'profile_picture']
         extra_kwargs = {
             'date_created': {'read_only': True},
             'password': {'write_only': True},
@@ -21,5 +21,10 @@ class UserSerializer(serializers.ModelSerializer):
         elif ('is_superuser' in validated_data):
             raise serializers.ValidationError("Contact the database administrator to update is_superuser")
         return super().update(instance, validated_data)
+
+class UserProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['profile_picture']
 
 

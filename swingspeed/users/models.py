@@ -5,6 +5,9 @@ from django.utils.translation import gettext_lazy as _
 
 from .managers import UserManager
 
+def user_directory_path(instance, filename):
+# file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'profile-pictures/user_{0}/{1}'.format(instance.id, filename)
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(_('username'), unique=True, max_length=20, blank=False)
@@ -12,6 +15,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_created = models.DateTimeField(default=timezone.now)
+    profile_picture = models.ImageField(upload_to=user_directory_path, blank=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []

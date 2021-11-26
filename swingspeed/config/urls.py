@@ -21,7 +21,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     #path('api/', include('users.urls')),
     path('api/', include('swings.urls')),
-    path('api/', include('djoser.urls')),
-    path('api/', include('djoser.urls.authtoken'))
+    path('api/', include('users.urls')),
 ]
 #urlpatterns = format_suffix_patterns(urlpatterns)
