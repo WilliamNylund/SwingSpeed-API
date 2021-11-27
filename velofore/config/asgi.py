@@ -1,5 +1,5 @@
 """
-ASGI config for swingspeed project.
+ASGI config for velofore project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
