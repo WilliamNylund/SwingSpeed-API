@@ -1,1 +1,1 @@
-# Velofore API
+# SwingSpeed API
