@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath velofore/config config.wsgi
+web: gunicorn --pythonpath velofore config.wsgi
