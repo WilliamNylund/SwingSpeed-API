@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from .managers import UserManager
 
 def user_directory_path(instance, filename):
-# file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+# file will be uploaded to MEDIA_ROOT/profile-picture/user_<id>/<filename>
     return 'profile-pictures/user_{0}/{1}'.format(instance.id, filename)
 
 class User(AbstractBaseUser, PermissionsMixin):
