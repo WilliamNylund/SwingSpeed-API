@@ -9,15 +9,14 @@ from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from users.permissions import IsOwnerOrAdmin
-from django.conf import settings
 
 """
-    THIS VIEW IS CURRENTLY NOT IN USE, AS WERE USING DJOSER VIEWS
+    Majority of user endpoints exist in Djoser
 """
 
 class UserProfilePicture(APIView):
     """
-    Profilepicture handling
+    Profile picture handling
     """
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
@@ -50,33 +49,3 @@ class UserProfilePicture(APIView):
         user = self.get_object(request.user.id)
         user.profile_picture.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-class UserList(APIView):
-    """
-    List all users, or create a new user.
-    """
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
-    def get(self, request, format=None):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-
-class UserDetail(APIView):
-    """
-    Retrieve, update or delete a user instance.
-    """
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
-    def get_object(self, pk):
-        try:
-            obj = User.objects.get(pk=pk)
-            self.check_object_permissions(self.request, obj)
-            return obj
-        except User.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        user = self.get_object(pk)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)

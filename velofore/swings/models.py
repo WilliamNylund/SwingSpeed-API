@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 
 def user_directory_path(instance, filename):
 # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}'.format(instance.user.id, filename)
+    return 'recordings/user_{0}/{1}'.format(instance.user.id, filename)
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]

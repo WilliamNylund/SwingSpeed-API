@@ -21,10 +21,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    #path('api/', include('users.urls')),
     path('api/', include('swings.urls')),
     path('api/', include('users.urls')),
 ]
-
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-#urlpatterns = format_suffix_patterns(urlpatterns)
