@@ -9,6 +9,7 @@ from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from users.permissions import IsOwnerOrAdmin
+from django.conf import settings
 
 """
     THIS VIEW IS CURRENTLY NOT IN USE, AS WERE USING DJOSER VIEWS
@@ -21,6 +22,7 @@ class UserProfilePicture(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
     def get_object(self, pk):
+        print(settings.DEBUG)
         try:
             obj = User.objects.get(pk=pk)
             self.check_object_permissions(self.request, obj)
