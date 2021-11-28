@@ -22,7 +22,6 @@ class UserProfilePicture(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
     def get_object(self, pk):
-        print(settings.DEBUG)
         try:
             obj = User.objects.get(pk=pk)
             self.check_object_permissions(self.request, obj)
