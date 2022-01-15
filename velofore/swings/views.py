@@ -21,10 +21,7 @@ class SwingList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        request.data._mutable = True
         request.data['user'] = request.user.pk
-        request.data._mutable = False
-
         serializer = SwingSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
