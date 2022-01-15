@@ -24,4 +24,4 @@ class Swing(models.Model):
         ordering = ['date_created']
 
     def __str__(self):
-        return self.date_created + ': ' + self.speed
+        return self.user.username + ': ' + str(self.speed)
