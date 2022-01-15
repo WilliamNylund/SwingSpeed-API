@@ -8,10 +8,13 @@ from django.contrib.auth import authenticate
 from djoser import views as djoser_views
 
 class UsersManagersTests(TestCase):
+    factory = APIRequestFactory()
     def setUp(self):
         User = get_user_model()
-        User.objects.create(username="testuser", password="foo")
-        User.objects.create_superuser(username='testadmin', password='foo')
+        self.user = User.objects.create(username="testuser", password="foo")
+        self.user.token = Token.objects.get_or_create(user=self.user)
+        self.admin_user = User.objects.create_superuser(username='testadmin', password='foo')
+        self.admin_user.token = Token.objects.get_or_create(user=self.admin_user)
 
     def test_create_user(self):
         User = get_user_model()
@@ -31,25 +34,19 @@ class UsersManagersTests(TestCase):
 
 
     def test_get_user(self):
-        factory = APIRequestFactory()
-
         """ ADMIN TESTS """
-        admin_user = get_user_model().objects.get(username='testadmin')
-        admin_user.token = Token.objects.get_or_create(user=admin_user)
         view = djoser_views.UserViewSet.as_view({'get': 'list'})
-        request = factory.get('/auth/users/')
-        force_authenticate(request, user=admin_user, token=admin_user.token)
+        request = self.factory.get('/api/users/')
+        force_authenticate(request, user=self.admin_user, token=self.admin_user.token)
         response = view(request)
         assert len(response.data) > 1
         assert response.status_code == 200
 
         """ REGULAR USER TESTS"""
         """ GET """
-        user = get_user_model().objects.get(username='testuser')
-        user.token = Token.objects.get_or_create(user=user)
         view = djoser_views.UserViewSet.as_view({'get': 'list'})
-        request = factory.get('/auth/users/me')
-        force_authenticate(request, user=user, token=user.token)
+        request = self.factory.get('/api/users/me')
+        force_authenticate(request, user=self.user, token=self.user.token)
         response = view(request)
         assert len(response.data) == 1
         assert response.status_code == 200
