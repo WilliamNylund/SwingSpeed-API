@@ -1,4 +1,3 @@
-from .models import User
 from .serializers import SwingSerializer, SwingUpdateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +7,9 @@ from .models import Swing
 from rest_framework.authentication import TokenAuthentication
 from swings.permissions import IsOwnerOrAdmin
 from rest_framework import permissions
+from .videoanalysis import analyze
+import time
+import threading
 
 class SwingList(APIView):
     """
@@ -67,3 +69,51 @@ class SwingDetail(APIView):
         swing = self.get_object(pk)
         swing.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+"""
+    Upload a swing for measuring (WIP)
+"""
+class SwingMeasurment(APIView):
+    def post(self, request, format=None):
+        print("video upload request recieved")
+        start = time.time()
+        video = request.FILES.get('video', None)
+        if video is None:
+            print("video was not provided")
+            return Response('Video was not provided', status=status.HTTP_400_BAD_REQUEST)
+        path = video.temporary_file_path()
+
+        #Start a thread that does the video analysis
+        print('starting thread')
+        thread = threading.Thread(target=analyze, args=(path,))
+        thread.start()
+        end = time.time()
+        print('request done in: ' + str(end - start))
+        
+        return Response('result', status=status.HTTP_200_OK)
+
+"""
+4.MOV 4.20MB
+LOCAL: 0.37s analysis, 0.43 total
+HEROKU: 1.31s analysis, 2.3 total
+
+golf.mp4 22.5MB
+LOCAL: 3.64s analysis, 3.82 total
+HEROKU: 8.38s analysis, 9.24 total
+
+3.mp4 39.3MB
+LOCAL: 4.33s analysis, 4.62 total
+HEROKU: 9.73s analysis, 12.19 total
+
+videoplayback.mp4 22.5MB 
+LOCAL: 4s
+HEROKU: Sometimes 20s sometimes  7s??
+
+with mask: 22.5MB
+LOCAL: 47.0s twice
+HEROKU: times out after 30 seconds
+
+with mask: 4.2MB
+LOCAL: 5s
+HEROKU: times out after 30 seconds
+"""
