@@ -76,15 +76,32 @@ class SwingDetail(APIView):
 class SwingMeasurment(APIView):
     def post(self, request, format=None):
         print("video upload request recieved")
+        print(request)
+        print(request.FILES)
+        print(request.data)
         start = time.time()
         video = request.FILES.get('video', None)
         if video is None:
-            print("video was not provided")
+            print("video was not provided1")
+            #return Response('Video was not provided', status=status.HTTP_400_BAD_REQUEST)
+            video = request.data.get('video', None)
+        if video is None:
+            print("didnt find it in data either") ##reset later
             return Response('Video was not provided', status=status.HTTP_400_BAD_REQUEST)
+        print('video found')
         path = video.temporary_file_path()
 
-        #Start a thread that does the video analysis
+        # Start a thread that does the video analysis
         print('starting thread')
+        # These requests are currently taking way too long.
+        # Solution 1:
+        # Return 204 no content. process video in background thread, 
+        # If without auth, generate token and return it. and save swing connected to token
+        #       subscribe? / frontend can fetch results with token later
+        # If authenticated, Save swing
+        # 2:
+        # Optimize :^)
+
         thread = threading.Thread(target=analyze, args=(path,))
         thread.start()
         end = time.time()
@@ -115,5 +132,6 @@ HEROKU: times out after 30 seconds
 
 with mask: 4.2MB
 LOCAL: 5s
-HEROKU: times out after 30 seconds
+HEROKU: times out after 30 seconds mby not
 """
+
