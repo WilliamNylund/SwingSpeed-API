@@ -28,17 +28,16 @@ class UserProfilePicture(APIView):
         except User.DoesNotExist:
             raise Http404
 
-    def post(self, request, format=None):
-        try:
-            user = request.user
+    def put(self, request, format=None):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
             if user.profile_picture is not None:
                 user.profile_picture.delete()
-            user.profile_picture = request.data['picture']
-            user.save()
-            serializer = UserProfilePictureSerializer(user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, format=None):
         user = self.get_object(request.user.id)
