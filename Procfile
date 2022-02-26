@@ -1,2 +1,2 @@
-release: python velofore/manage.py migrate
-web: gunicorn --pythonpath velofore config.wsgi
+release: python manage.py migrate
+web: gunicorn config.wsgi

@@ -10,6 +10,7 @@ from rest_framework import permissions
 from .videoanalysis import analyze
 import time
 import threading
+from .tasks import test_task
 
 class SwingList(APIView):
     """
@@ -101,13 +102,9 @@ class SwingMeasurment(APIView):
         # If authenticated, Save swing
         # 2:
         # Optimize :^)
-
-        thread = threading.Thread(target=analyze, args=(path,))
-        thread.start()
-        end = time.time()
-        print('request done in: ' + str(end - start))
         
-        return Response('result', status=status.HTTP_200_OK)
+        task = test_task.delay(5)
+        return Response('request recieved', status=status.HTTP_200_OK)
 
 """
 4.MOV 4.20MB
