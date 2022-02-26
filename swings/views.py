@@ -11,6 +11,10 @@ from .videoanalysis import analyze
 import time
 import threading
 from .tasks import test_task
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 class SwingList(APIView):
     """
@@ -80,30 +84,18 @@ class SwingMeasurment(APIView):
         print(request)
         print(request.FILES)
         print(request.data)
-        start = time.time()
         video = request.FILES.get('video', None)
         if video is None:
-            print("video was not provided1")
-            #return Response('Video was not provided', status=status.HTTP_400_BAD_REQUEST)
-            video = request.data.get('video', None)
-        if video is None:
-            print("didnt find it in data either") ##reset later
             return Response('Video was not provided', status=status.HTTP_400_BAD_REQUEST)
         print('video found')
-        path = video.temporary_file_path()
-
-        # Start a thread that does the video analysis
-        print('starting thread')
-        # These requests are currently taking way too long.
-        # Solution 1:
-        # Return 204 no content. process video in background thread, 
-        # If without auth, generate token and return it. and save swing connected to token
-        #       subscribe? / frontend can fetch results with token later
-        # If authenticated, Save swing
-        # 2:
-        # Optimize :^)
-        
-        task = test_task.delay(5)
+        print(type(video))
+        if isinstance(video, InMemoryUploadedFile):
+            # Files that are less than 4.5mb are only saved in memory.
+            # We want to save these files while analyzing them. They're deleted after analysis is done
+            path = default_storage.save('tmp/' + video.name, ContentFile(video.read()))
+        else:
+            path = video.temporary_file_path()
+        task = test_task.delay(path)
         return Response('request recieved', status=status.HTTP_200_OK)
 
 """
