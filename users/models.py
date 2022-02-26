@@ -21,10 +21,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_created = models.DateTimeField(default=timezone.now)
     profile_picture = models.ImageField(upload_to=user_directory_path, blank=True)
-    age = models.PositiveSmallIntegerField(null=True, validators=[MinValueValidator(0), MaxValueValidator(150)])
-    gender = models.IntegerField(choices=Gender.choices, null=True)
-    height = models.FloatField(null=True)
-    handicap = models.PositiveSmallIntegerField(null=True, validators=[MinValueValidator(0), MaxValueValidator(36)])
+    age = models.PositiveSmallIntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(150)])
+    gender = models.IntegerField(choices=Gender.choices, null=True, blank=True)
+    height = models.FloatField(null=True, blank=True)
+    handicap = models.PositiveSmallIntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(36)])
     lefty = models.BooleanField(null=True)
 
     USERNAME_FIELD = 'username'
