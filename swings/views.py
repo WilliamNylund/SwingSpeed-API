@@ -1,3 +1,4 @@
+from cmath import e
 from .serializers import SwingSerializer, SwingUpdateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -82,7 +83,7 @@ class SwingMeasurment(APIView):
     authentication_classes = [TokenAuthentication]
     def post(self, request, format=None):
         print("video upload request recieved")
-        print(request)
+        print(request.user)
         print(request.FILES)
         print(request.data)
         video = request.FILES.get('video', None)
@@ -96,7 +97,8 @@ class SwingMeasurment(APIView):
             path = default_storage.save('tmp/' + video.name, ContentFile(video.read()))
         else:
             path = video.temporary_file_path()
-        task = test_task.delay(path)
+        
+        task = test_task.delay(path, request.user.pk)
         return Response({'task_id': task.id}, status=status.HTTP_200_OK)
 
 """

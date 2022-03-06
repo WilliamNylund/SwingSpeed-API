@@ -2,9 +2,12 @@ from celery import shared_task
 from time import sleep
 from celery_progress.backend import ProgressRecorder
 from django.core.files.storage import default_storage
+import random
+from .models import Swing
+from .models import User
 
 @shared_task(bind=True)
-def test_task(self, path):
+def test_task(self, path, user_id):
     print("start task")
     progress_recorder = ProgressRecorder(self)
     for i in range(100):
@@ -15,4 +18,7 @@ def test_task(self, path):
         default_storage.delete(path)
     except:
         print("path was not in default_storage")
-    return "done sleeping"
+    speed = round(random.uniform(30, 90), 2)
+    user = User.objects.get(pk=user_id)
+    Swing(speed=speed, user=user).save()
+    return f"Created swing for {user} with speed {speed}"
