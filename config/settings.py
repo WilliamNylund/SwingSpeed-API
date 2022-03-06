@@ -38,13 +38,9 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
-#CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672'
-CELERY_ACCEPT_CONTENT =['json']
-CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL")
+CELERY_BROKER_URL = os.environ.get("REDIS_URL")
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 
 
 # Application definition

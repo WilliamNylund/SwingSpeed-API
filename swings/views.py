@@ -79,6 +79,7 @@ class SwingDetail(APIView):
     Upload a swing for measuring (WIP)
 """
 class SwingMeasurment(APIView):
+    authentication_classes = [TokenAuthentication]
     def post(self, request, format=None):
         print("video upload request recieved")
         print(request)
@@ -96,7 +97,7 @@ class SwingMeasurment(APIView):
         else:
             path = video.temporary_file_path()
         task = test_task.delay(path)
-        return Response('request recieved', status=status.HTTP_200_OK)
+        return Response({'task_id': task.id}, status=status.HTTP_200_OK)
 
 """
 4.MOV 4.20MB

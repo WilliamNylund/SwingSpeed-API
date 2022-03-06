@@ -9,7 +9,7 @@ def test_task(self, path):
     progress_recorder = ProgressRecorder(self)
     for i in range(100):
         sleep(0.1)
-        progress_recorder.set_progress(i, 100, 'iteration: ' + str(i))
+        progress_recorder.set_progress(i, 100, description="Loading")
     try:
         # Delete video if it was stored in default storage
         default_storage.delete(path)
