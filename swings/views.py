@@ -8,14 +8,12 @@ from .models import Swing
 from rest_framework.authentication import TokenAuthentication
 from swings.permissions import IsOwnerOrAdmin
 from rest_framework import permissions
-from .videoanalysis import analyze
-import time
-import threading
 from .tasks import test_task
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from os.path import exists
 
 class SwingList(APIView):
     """
@@ -90,15 +88,9 @@ class SwingMeasurment(APIView):
         if video is None:
             return Response('Video was not provided', status=status.HTTP_400_BAD_REQUEST)
         print('video found')
-        print(type(video))
-        if isinstance(video, InMemoryUploadedFile):
-            # Files that are less than 4.5mb are only saved in memory.
-            # We want to save these files while analyzing them. They're deleted after analysis is done
-            path = default_storage.save('tmp/' + video.name, ContentFile(video.read()))
-        else:
-            path = video.temporary_file_path()
-        
-        task = test_task.delay(path, request.user.pk)
+        swing = Swing(user=request.user, recording=video)
+        swing.save()
+        task = test_task.delay(swing.pk)
         return Response({'task_id': task.id}, status=status.HTTP_200_OK)
 
 """

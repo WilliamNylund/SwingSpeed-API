@@ -14,7 +14,7 @@ def get_sentinel_user():
 
 class Swing(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user)) #default get current user
-    speed = models.FloatField(null=False)
+    speed = models.FloatField(null=True)
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     is_active = models.BooleanField(default=True, null=False)
     note = models.TextField(blank=True, null=False)

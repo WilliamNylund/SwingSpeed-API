@@ -1,24 +1,20 @@
 from celery import shared_task
-from time import sleep
 from celery_progress.backend import ProgressRecorder
-from django.core.files.storage import default_storage
 import random
 from .models import Swing
-from .models import User
+# Now do your import
+#from .tracker.main import analyze
+from .videoanalysis import analyze
+import base64
 
 @shared_task(bind=True)
-def test_task(self, path, user_id):
+def test_task(self, swing_id):
     print("start task")
-    progress_recorder = ProgressRecorder(self)
-    for i in range(100):
-        sleep(0.1)
-        progress_recorder.set_progress(i, 100, description="Loading")
-    try:
-        # Delete video if it was stored in default storage
-        default_storage.delete(path)
-    except:
-        print("path was not in default_storage")
+    swing = Swing.objects.get(pk=swing_id)
+    analyze(self, swing.recording.path)
+    #delete video
+    swing.recording.delete()
     speed = round(random.uniform(30, 90), 2)
-    user = User.objects.get(pk=user_id)
-    Swing(speed=speed, user=user).save()
-    return f"Created swing for {user} with speed {speed}"
+    swing.speed = speed
+    swing.save()
+    return f"Created swing for {swing.user} with speed {speed}"

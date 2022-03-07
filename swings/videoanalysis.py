@@ -1,17 +1,17 @@
 import cv2
 import time
+from os.path import exists
+from celery_progress.backend import ProgressRecorder
 
-
-
-def analyze(path):
+def analyze(self, path):
     # Create a VideoCapture object and read from input file
     # If the input is the camera, pass 0 instead of the video file name
+    progress_recorder = ProgressRecorder(self)
     cap = cv2.VideoCapture(path)
-
     # Check if camera opened successfully
     if (cap.isOpened()== False): 
         print("Error opening video stream or file")
-
+    tot_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     frames = 0
 
     # Read until video is completed
@@ -26,6 +26,7 @@ def analyze(path):
             frames = frames + 1
             mask = object_detector.apply(frame)
             edges= cv2.Canny(frame,400,603)
+            progress_recorder.set_progress(frames, tot_frames, description="Loading")
         # Break the loop
         else: 
             break
