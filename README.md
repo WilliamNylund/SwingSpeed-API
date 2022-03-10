@@ -31,3 +31,24 @@ python manage.py migrate
 ```
 python manage.py runserver
 ```
+```
+migrate: docker-compose run django python /code/manage.py migrate --noinput
+```
+```
+makemigrations: docker-compose run django python /code/manage.py makemigrations
+```
+```
+collectstatic: docker-compose run django python /code/manage.py collectstatic
+```
+```
+stop: docker-compose down
+```
+```
+start: docker-compose up
+```
+```
+create-superuser: docker-compose run django python /code/manage.py createsuperuser
+```
+```
+test: docker-compose run django python /code/manage.py test
+```
