@@ -14,7 +14,7 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from os.path import exists
-
+#TMP NOTE, soted user_1 recording swing id 17 kl 15:07
 class SwingList(APIView):
     """
     List all swings, or create a new swing.
@@ -87,9 +87,10 @@ class SwingMeasurment(APIView):
         video = request.FILES.get('video', None)
         if video is None:
             return Response('Video was not provided', status=status.HTTP_400_BAD_REQUEST)
-        print('video found')
+        print('video found, saving recording')
         swing = Swing(user=request.user, recording=video)
         swing.save()
+        print(exists(swing.recording.path))
         task = test_task.delay(swing.pk)
         return Response({'task_id': task.id}, status=status.HTTP_200_OK)
 

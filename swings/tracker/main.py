@@ -6,7 +6,7 @@ from . import background_subtractor as bs
 from . import region_tracker_module as rt
 import cv2
 
-def analyze(path):
+def analyze(self, path):
     # Timing 
     print("starting analysis")
     print(path)

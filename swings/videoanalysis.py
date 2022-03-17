@@ -1,3 +1,4 @@
+from sys import path_importer_cache
 import cv2
 import time
 from os.path import exists
@@ -7,7 +8,9 @@ def analyze(self, path):
     # Create a VideoCapture object and read from input file
     # If the input is the camera, pass 0 instead of the video file name
     progress_recorder = ProgressRecorder(self)
-    cap = cv2.VideoCapture(path)
+    print(path)
+    cap = cv2.VideoCapture(path) #path 997
+
     # Check if camera opened successfully
     if (cap.isOpened()== False): 
         print("Error opening video stream or file")

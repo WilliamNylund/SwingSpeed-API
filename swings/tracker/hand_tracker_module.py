@@ -17,7 +17,7 @@ def track(frame, drawImage = False):
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         print(16)
         results = pose.process(frame) #errrrrrror
-        print(2)
+        print(7)
         # Draw the pose annotation on the image.
         frame.flags.writeable = True
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
