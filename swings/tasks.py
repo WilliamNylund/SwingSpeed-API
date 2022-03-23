@@ -1,3 +1,5 @@
+from re import I
+from time import sleep
 from celery import shared_task
 from celery_progress.backend import ProgressRecorder
 import random
@@ -11,15 +13,17 @@ import base64
 def test_task(self, swing_id):
     print("start task")
     swing = Swing.objects.get(pk=swing_id)
-    #temp fix for paths
-    splits = swing.recording.path.split('app/')
-    path2 = splits[-1]
-    actual_path = 'https://velofore.herokuapp.com/' + path2
-    print(actual_path)
-    analyze(self, actual_path)
-    #delete video
+    progress_recorder = ProgressRecorder(self)
+    for i in range(15):
+        #simulate video analysis
+        sleep(1)
+        progress_recorder.set_progress(i, 15, description="Loading")
+
     swing.recording.delete()
     speed = round(random.uniform(30, 90), 2)
     swing.speed = speed
     swing.save()
-    return f"Created swing for {swing.user} with speed {speed}"
+    return {
+        "message": f"Created swing for {swing.user} with speed {speed}",
+        "swing": swing.pk
+    }
