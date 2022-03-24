@@ -58,14 +58,6 @@ class SwingDetail(APIView):
         serializer = SwingSerializer(swing)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        swing = self.get_object(pk)
-        serializer = SwingUpdateSerializer(swing, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     def patch(self, request, pk, format=None):
         swing = self.get_object(pk)
         serializer = SwingUpdateSerializer(swing, data=request.data)
